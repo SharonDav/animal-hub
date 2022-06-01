@@ -1,9 +1,7 @@
-  // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 
 pragma solidity >=0.7.0 <0.9.0;
  
-
-
 interface IERC20Token {
    function transfer(address, uint256) external returns (bool);
 
@@ -42,22 +40,24 @@ interface IERC20Token {
         string name;
         string breed;
         string age;
-         uint price;
-         
-      
+        uint price;
     }
-       mapping (uint =>  Animal) internal animals;
+    mapping (uint =>  Animal) internal animals;
 
+    event AnimalAdded(address indexed owner, uint256 animal_index, uint256 price);
+    event AnimalBought(address indexed buyer, address seller, uint256 animal_index, uint256 price);
+    event PriceEdit(address indexed owner, uint256 animal_index, uint256 new_price);
+    event AgeUpdate(address indexed owner, uint256 animal_index, string age);
        
-     function addAnimal (
+    function addAnimal (
         string memory _image,
         string memory _name,
         string memory _breed,
-         string memory _age,
+        string memory _age,
         uint _price
 
-          ) public {
-       Animal storage animalhub = animals[animalsLength];
+        ) public {
+       Animal memory animalhub = animals[animalsLength];
 
         animalhub.owner = payable(msg.sender);
            animalhub.image = _image;
@@ -66,12 +66,12 @@ interface IERC20Token {
            animalhub.age = _age;
            animalhub.price = _price;
 
-          
+        emit AnimalAdded(msg.sender, animalsLength, _price);
         animalsLength++;
           }
          
          
-      function buyAnimal(uint _index) public payable  {
+      function buyAnimal(uint _index) public payable {
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
             msg.sender,
@@ -80,9 +80,8 @@ interface IERC20Token {
           ),
           "Transfer failed."
         );
-
-         animals[_index].owner = payable(msg.sender);
-         
+        emit AnimalBought(msg.sender, animals[_index].owner, _index, animals[_index].price);
+        animals[_index].owner = payable(msg.sender);         
     }
 
     
@@ -93,34 +92,30 @@ interface IERC20Token {
         string memory,
         string memory,
         uint
-        
-      
     ) {
 
       return (  
             animals[_index].owner,
             animals[_index].image,
-             animals[_index].name,
+            animals[_index].name,
             animals[_index].breed,
             animals[_index].age,
-            animals[_index].price
-
-                          
+            animals[_index].price                
         );
     }
     
-
     function UpdateAge(uint _index, string memory _age) public {
         require(msg.sender == animals[_index].owner, "Only creator can perform this operation");
         animals[_index].age = _age;
+        emit AgeUpdate(msg.sender, _index, _age);
     }
 
     function AddNewPrice(uint _index, uint _price) public {
         require(msg.sender == animals[_index].owner, "Only creator can perform this operation");
         animals[_index].price = _price;
-
+        emit PriceEdit(msg.sender, _index, _price);
     }
- function getanimalsLength() public view returns (uint) {
-        return (animalsLength);
+    function getanimalsLength() public view returns (uint) {
+            return (animalsLength);
     }
 }
