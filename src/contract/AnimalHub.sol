@@ -48,6 +48,10 @@ interface IERC20Token {
     }
        mapping (uint =>  Animal) internal animals;
 
+   modifier isOwner(uint _index){
+      require(msg.sender == animals[_index].owner, "Only creator can perform this operation");
+      _;
+   }
        
      function addAnimal (
         string memory _image,
@@ -110,14 +114,12 @@ interface IERC20Token {
     }
     
 
-    function UpdateAge(uint _index, string memory _age) public {
-        require(msg.sender == animals[_index].owner, "Only creator can perform this operation");
+    function UpdateAge(uint _index, string memory _age) isOwner(_index) public {
         animals[_index].age = _age;
     }
 
-    function AddNewPrice(uint _index, uint _price) public {
-        require(msg.sender == animals[_index].owner, "Only creator can perform this operation");
-        animals[_index].price = _price;
+    function AddNewPrice(uint _index, uint _price) isOwner(_index) public {
+       animals[_index].price = _price;
 
     }
  function getanimalsLength() public view returns (uint) {
