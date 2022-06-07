@@ -3,7 +3,6 @@ import { useState } from 'react';
 
 const Animals = (props) => {
   const [newAge, setnewAge] = useState('');
-  const [newPrice, setnewPrice] =useState('');
   const submitHandler = (e) => {
     e.preventDefault();}
 
@@ -50,12 +49,16 @@ const Animals = (props) => {
                    {pet.price / 1000000000000000000} cUSD
                  </h6>
                </div>
-
+               {props.onlyUser !== pet.owner && (
                <div><button type="button" class="btn tip btn-outline-primary" onClick={() => props.buyAnimal(pet.index)}>Buy Pet</button>
                </div>
+               )}
+
+               {props.onlyUser === pet.owner && (
                <div><input class="form-control form-control-lg"  onChange={(e) => setnewAge(e.target.value)} type="text" placeholder="Update Pet Age"></input>
                <button class="btn btn-primary mb-2"  onClick={() => props.UpdateAnimalAge(pet.index, newAge)}>Update Age</button>
                </div>
+               )}
                 
                
 

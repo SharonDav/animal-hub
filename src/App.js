@@ -170,6 +170,7 @@ const addAnimal = async (
       <Animals animals ={animals}
       buyAnimal = {buyAnimal}
       UpdateAnimalAge = {UpdateAnimalAge}
+      onlyUser={address}
       
        
       />
